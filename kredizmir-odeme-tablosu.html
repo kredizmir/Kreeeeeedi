@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>KREDİZMİR – Ödeme Tablosu</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --navy:   #0B1E3D;
+  --navy2:  #122850;
+  --navyli: #1A3566;
+  --gold:   #C9A84C;
+  --goldli: #E8C97A;
+  --white:  #FFFFFF;
+  --bg:     #EEF2F8;
+  --mid:    #3A4F72;
+  --border: #C8D3E8;
+  --rowalt: #EDF1F9;
+}
+body {
+  font-family: Arial, sans-serif;
+  background: var(--bg);
+  min-height: 100vh;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 20px 14px 60px;
+}
+.logo-bar { display:flex; align-items:center; gap:10px; margin-bottom:20px; }
+.logo-box {
+  background: var(--navy); color: var(--gold);
+  font-size: 20px; font-weight: 900; letter-spacing: 2px;
+  padding: 7px 15px; border-radius: 4px; text-transform: uppercase;
+}
+.logo-tag { font-size:11px; font-weight:700; color:var(--mid); letter-spacing:1.5px; text-transform:uppercase; }
+
+/* KART */
+.card {
+  background: var(--white); border: 1.5px solid var(--border);
+  border-radius: 10px; padding: 20px 22px; width:100%; max-width:500px;
+  box-shadow: 0 4px 16px rgba(11,30,61,0.08); margin-bottom:20px;
+}
+.field { margin-bottom:14px; }
+.field:last-child { margin-bottom:0; }
+.field label {
+  display:block; font-size:11px; font-weight:700; letter-spacing:1.4px;
+  text-transform:uppercase; color:var(--mid); margin-bottom:6px;
+}
+.input-row { display:flex; gap:8px; }
+.wrap { position:relative; flex:1; }
+.wrap .sym {
+  position:absolute; left:11px; top:50%; transform:translateY(-50%);
+  font-size:17px; font-weight:700; color:var(--navy); pointer-events:none;
+}
+input[type=text] {
+  width:100%; height:48px; border:2px solid var(--border); border-radius:7px;
+  font-size:17px; font-weight:700; color:var(--navy);
+  padding:0 12px 0 30px; background:var(--bg); outline:none;
+  font-family:Arial,sans-serif; -webkit-appearance:none;
+  transition:border-color .2s;
+}
+#galeri { padding-left:12px; }
+input[type=text]:focus { border-color:var(--navyli); background:#fff; }
+
+/* FOTOĞRAF YÜKLEME ALANI */
+.foto-alan {
+  width:100%; border:2px dashed var(--border); border-radius:8px;
+  background:var(--bg); cursor:pointer;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:8px; padding:20px; transition:border-color .2s; position:relative;
+  min-height:80px;
+}
+.foto-alan:hover { border-color:var(--navyli); }
+.foto-alan input[type=file] {
+  position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%;
+}
+.foto-alan .foto-ikon { font-size:28px; }
+.foto-alan .foto-yazi { font-size:12px; font-weight:700; color:var(--mid); letter-spacing:1px; text-transform:uppercase; }
+.foto-alan .foto-alt  { font-size:11px; color:#8a9bbf; }
+/* Önizleme küçük resim */
+.foto-onizleme {
+  width:100%; height:100px; object-fit:cover; border-radius:6px;
+  display:none;
+}
+.foto-temizle {
+  position:absolute; top:6px; right:6px;
+  background:rgba(11,30,61,0.7); color:#fff; border:none;
+  border-radius:50%; width:24px; height:24px; cursor:pointer;
+  font-size:14px; display:none; align-items:center; justify-content:center;
+  z-index:2;
+}
+
+.btn-hesap {
+  width:100%; height:48px; background:var(--navy); color:var(--goldli);
+  font-size:14px; font-weight:800; letter-spacing:1.4px; text-transform:uppercase;
+  border:none; border-radius:7px; cursor:pointer;
+  font-family:Arial,sans-serif; -webkit-appearance:none; margin-top:4px;
+  transition:background .2s;
+}
+.btn-hesap:active { background:var(--navyli); }
+
+/* SONUÇ */
+#sonuc { width:100%; max-width:900px; display:none; flex-direction:column; align-items:center; gap:14px; }
+#sonuc.goster { display:flex; }
+
+#tabloImg {
+  width:100%; max-width:900px; height:auto;
+  border-radius:10px;
+  box-shadow: 0 8px 32px rgba(11,30,61,0.22);
+  display:block;
+  -webkit-user-select:none; user-select:none;
+  -webkit-touch-callout:default;
+}
+
+.ipucu {
+  width:100%; max-width:900px;
+  background:var(--white); border:1px solid var(--border);
+  border-radius:7px; padding:10px 16px;
+  font-size:12px; color:var(--mid); text-align:center; line-height:1.7;
+}
+.btn-row { display:flex; gap:10px; justify-content:center; width:100%; max-width:900px; }
+.btn-pdf {
+  display:flex; align-items:center; gap:7px;
+  height:44px; padding:0 22px; background:var(--navy); color:var(--goldli);
+  font-size:13px; font-weight:800; letter-spacing:1.4px; text-transform:uppercase;
+  border:none; border-radius:7px; cursor:pointer;
+  font-family:Arial,sans-serif; -webkit-appearance:none;
+}
+.btn-pdf:active { opacity:.75; }
+
+@media print {
+  body { background:#fff; padding:0; }
+  .logo-bar,.card,.ipucu,.btn-row { display:none !important; }
+  #sonuc { display:flex !important; }
+  #tabloImg { box-shadow:none; border-radius:0; width:100%; }
+}
+</style>
+</head>
+<body>
+
+<div class="logo-bar">
+  <div class="logo-box">KREDİZMİR</div>
+  <div class="logo-tag">Taksitle Araba Sahibi</div>
+</div>
+
+<div class="card">
+  <!-- Galeri adı — sabit -->
+  <input type="hidden" id="galeri" value="TEMELLER OTOMOTİV">
+
+  <!-- Araç fotoğrafı -->
+  <div class="field">
+    <label>Araç Fotoğrafı (İsteğe Bağlı)</label>
+    <div class="foto-alan" id="fotoAlan">
+      <input type="file" id="fotoInput" accept="image/*" onchange="fotoSec(this)">
+      <img class="foto-onizleme" id="fotoOnizleme" src="" alt="">
+      <button class="foto-temizle" id="fotoTemizle" onclick="fotoClear(event)">✕</button>
+      <span class="foto-ikon" id="fotoIkon">🚗</span>
+      <span class="foto-yazi" id="fotoYazi">Araç Fotoğrafı Yükle</span>
+      <span class="foto-alt"  id="fotoAlt">Dokunun veya seçin</span>
+    </div>
+  </div>
+
+  <!-- Araç fiyatı -->
+  <div class="field">
+    <label>Araç Fiyatı (TL)</label>
+    <div class="input-row">
+      <div class="wrap">
+        <span class="sym">₺</span>
+        <input type="text" id="fiyat" value="860.000" inputmode="numeric" autocomplete="off">
+      </div>
+    </div>
+  </div>
+
+  <button class="btn-hesap" onclick="hesapla()">Tabloyu Oluştur</button>
+</div>
+
+<div id="sonuc">
+  <img id="tabloImg" src="" alt="Ödeme Tablosu">
+  <p class="ipucu">
+    📱 <strong>iPhone:</strong> Görsele <strong>uzun basın</strong> → "Fotoğrafa Kaydet"<br>
+    🖥 <strong>Masaüstü:</strong> Sağ tık → "Resmi Farklı Kaydet"
+  </p>
+  <div class="btn-row">
+    <button class="btn-pdf" onclick="window.print()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+        <polyline points="14 2 14 8 20 8"/>
+        <line x1="12" y1="18" x2="12" y2="12"/>
+        <polyline points="9 15 12 18 15 15"/>
+      </svg>
+      PDF / Yazdır
+    </button>
+  </div>
+</div>
+
+<script>
+// ── SABITLER ─────────────────────────────────────────────
+var FAIZ    = 0.0525;
+var ORANLAR = [0.25, 0.30, 0.35, 0.40, 0.45, 0.50];
+var VADELER = [12, 18, 24, 36];
+var _fotoImg = null; // yüklenen araç görseli
+
+// ── FORMAT ───────────────────────────────────────────────
+function tl(n){ return '\u20BA' + Math.round(n).toLocaleString('tr-TR'); }
+function oku(){
+  return parseFloat(
+    document.getElementById('fiyat').value.replace(/\./g,'').replace(',','.')
+  );
+}
+
+// ── INPUT FORMAT ─────────────────────────────────────────
+document.getElementById('fiyat').addEventListener('input', function(){
+  var r = this.value.replace(/\D/g,'');
+  this.value = r ? parseInt(r,10).toLocaleString('tr-TR') : '';
+});
+
+// ── FOTOĞRAF SEÇ ─────────────────────────────────────────
+function fotoSec(input){
+  if(!input.files || !input.files[0]) return;
+  var reader = new FileReader();
+  reader.onload = function(e){
+    var img = new Image();
+    img.onload = function(){
+      _fotoImg = img;
+      // Önizleme
+      var onizleme = document.getElementById('fotoOnizleme');
+      onizleme.src = e.target.result;
+      onizleme.style.display = 'block';
+      document.getElementById('fotoIkon').style.display  = 'none';
+      document.getElementById('fotoYazi').style.display  = 'none';
+      document.getElementById('fotoAlt').style.display   = 'none';
+      document.getElementById('fotoTemizle').style.display = 'flex';
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+function fotoClear(e){
+  e.stopPropagation();
+  _fotoImg = null;
+  document.getElementById('fotoInput').value = '';
+  document.getElementById('fotoOnizleme').style.display = 'none';
+  document.getElementById('fotoOnizleme').src = '';
+  document.getElementById('fotoIkon').style.display  = '';
+  document.getElementById('fotoYazi').style.display  = '';
+  document.getElementById('fotoAlt').style.display   = '';
+  document.getElementById('fotoTemizle').style.display = 'none';
+}
+
+// ── TAKSİT FORMÜLÜ ────────────────────────────────────────
+function taksit(kredi, n){
+  if(kredi<=0) return 0;
+  var r=FAIZ, c=Math.pow(1+r,n);
+  return kredi*(r*c)/(c-1);
+}
+
+// ── ANA ÇİZİM ────────────────────────────────────────────
+function hesapla(){
+  var fiyat  = oku();
+  var galeri = document.getElementById('galeri').value.trim() || 'GALERİ';
+  if(isNaN(fiyat)||fiyat<=0){ alert('Geçerli bir fiyat girin.'); return; }
+
+  // ── BOYUTLAR ──
+  var S     = 2;      // @2x retina
+  var W     = 900;
+  var FOTO_H= _fotoImg ? 340 : 0;   // araç fotoğrafı yüksekliği
+  var BH    = 88;                    // başlık
+  var THH   = 46;                    // thead
+  var RH    = 52;                    // satır yüksekliği
+  var AH    = 38;                    // altyazı
+  var COLS  = [210,172,173,173,172]; // sütun genişlikleri (toplam=900)
+  var NR    = ORANLAR.length;
+  var H     = FOTO_H + BH + THH + RH*NR + AH;
+
+  // ── RENKLER ──
+  var NAVY='#0B1E3D', NAVY2='#122850', NAVYLI='#1A3566',
+      GOLD='#C9A84C', GOLDI='#E8C97A',
+      WHITE='#FFFFFF', RALT='#EDF1F9',
+      BRD='#C8D3E8', MID='#3A4F72', BG='#EEF2F8';
+
+  var cv = document.createElement('canvas');
+  cv.width  = W * S;
+  cv.height = H * S;
+  var ctx = cv.getContext('2d');
+  ctx.scale(S, S);
+
+  function cx(i){ var x=0; for(var k=0;k<i;k++) x+=COLS[k]; return x; }
+
+  // ── ARAÇ FOTOĞRAFI (arka plan) ──────────────────────────
+  if(_fotoImg && FOTO_H > 0){
+    // Fotoğrafı cover mantığıyla çiz
+    var iw = _fotoImg.naturalWidth  || _fotoImg.width;
+    var ih = _fotoImg.naturalHeight || _fotoImg.height;
+    var scale = Math.max(W/iw, FOTO_H/ih);
+    var dw = iw*scale, dh = ih*scale;
+    var dx = (W-dw)/2, dy = (FOTO_H-dh)/2;
+    ctx.drawImage(_fotoImg, dx, dy, dw, dh);
+
+    // Üst koyu gradient katman (logo/galeri okunabilsin)
+    var gradTop = ctx.createLinearGradient(0,0,0,FOTO_H*0.45);
+    gradTop.addColorStop(0,   'rgba(11,30,61,0.82)');
+    gradTop.addColorStop(1,   'rgba(11,30,61,0.0)');
+    ctx.fillStyle = gradTop;
+    ctx.fillRect(0, 0, W, FOTO_H);
+
+    // Alt koyu gradient katman (tabloya geçiş)
+    var gradBot = ctx.createLinearGradient(0, FOTO_H*0.55, 0, FOTO_H);
+    gradBot.addColorStop(0,  'rgba(11,30,61,0.0)');
+    gradBot.addColorStop(1,  'rgba(11,30,61,0.92)');
+    ctx.fillStyle = gradBot;
+    ctx.fillRect(0, 0, W, FOTO_H);
+
+    // Galeri adı — sol üst, fotoğraf üstünde (büyük, italik)
+    ctx.fillStyle = GOLDI;
+    ctx.font = 'bold italic 20px Arial,sans-serif';
+    ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+    ctx.fillText(galeri.toUpperCase(), 20, 14);
+
+    // KREDİZMİR watermark — sağ üst, çok sönük
+    ctx.save();
+    ctx.globalAlpha = 0.09;
+    ctx.fillStyle   = '#FFFFFF';
+    ctx.font        = 'bold 28px Arial,sans-serif';
+    ctx.textAlign   = 'right'; ctx.textBaseline = 'top';
+    ctx.fillText('KREDİZMİR', W-18, 12);
+    ctx.restore();
+  }
+
+  // ── BAŞLIK BLOĞU ────────────────────────────────────────
+  var by0 = FOTO_H; // başlık y başlangıcı
+  ctx.fillStyle = NAVY;
+  ctx.fillRect(0, by0, W, BH);
+  // Gold alt çizgi
+  ctx.fillStyle = GOLD;
+  ctx.fillRect(0, by0+BH-4, W, 4);
+
+  // Fotoğraf yoksa galeri + watermark başlıkta göster
+  if(!_fotoImg){
+    ctx.fillStyle = GOLDI;
+    ctx.font = 'bold italic 18px Arial,sans-serif';
+    ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+    ctx.fillText(galeri.toUpperCase(), 18, by0+13);
+
+    ctx.save();
+    ctx.globalAlpha = 0.09;
+    ctx.fillStyle   = '#FFFFFF';
+    ctx.font        = 'bold 26px Arial,sans-serif';
+    ctx.textAlign   = 'right'; ctx.textBaseline = 'top';
+    ctx.fillText('KREDİZMİR', W-16, by0+10);
+    ctx.restore();
+  }
+
+  // Ana başlık
+  ctx.fillStyle = GOLDI;
+  ctx.font = 'bold 16px Arial,sans-serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(
+    tl(fiyat)+' TL ARAÇ İÇİN TAKSİTLİ SATIŞ ÖRNEK ÖDEME TABLOSU',
+    W/2, by0 + (_fotoImg ? BH*0.55 : BH*0.65)
+  );
+
+  // ── THEAD ──────────────────────────────────────────────
+  var thy = by0 + BH;
+  ctx.fillStyle = NAVY2;
+  ctx.fillRect(0, thy, W, THH);
+  ctx.fillStyle = GOLDI;
+  ctx.font = 'bold 13px Arial,sans-serif';
+  ctx.textBaseline = 'middle';
+  ['PEŞİNAT','12 AY','18 AY','24 AY','36 AY'].forEach(function(t,i){
+    var my = thy+THH/2;
+    if(i===0){ ctx.textAlign='left'; ctx.fillText(t, cx(0)+18, my); }
+    else      { ctx.textAlign='center'; ctx.fillText(t, cx(i)+COLS[i]/2, my); }
+  });
+  ctx.strokeStyle='rgba(255,255,255,0.10)'; ctx.lineWidth=1;
+  for(var i=1;i<COLS.length;i++){
+    ctx.beginPath(); ctx.moveTo(cx(i)+.5,thy); ctx.lineTo(cx(i)+.5,thy+THH); ctx.stroke();
+  }
+
+  // ── VERİ SATIRLARI ─────────────────────────────────────
+  var ry0 = thy + THH;
+  ORANLAR.forEach(function(oran,ri){
+    var pes=fiyat*oran, krd=fiyat-pes, pct=Math.round(oran*100)+'%';
+    var ry = ry0 + ri*RH;
+
+    ctx.fillStyle = ri%2===0 ? WHITE : RALT;
+    ctx.fillRect(0, ry, W, RH);
+    ctx.strokeStyle=BRD; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(0,ry+.5); ctx.lineTo(W,ry+.5); ctx.stroke();
+
+    var my = ry+RH/2;
+
+    // Peşinat
+    ctx.fillStyle=NAVY; ctx.font='bold 15px Arial,sans-serif';
+    ctx.textAlign='left'; ctx.textBaseline='middle';
+    var ps=tl(pes); ctx.fillText(ps, cx(0)+18, my);
+
+    // Badge
+    var tw=ctx.measureText(ps).width;
+    ctx.font='bold 10px Arial,sans-serif';
+    var bw=ctx.measureText(pct).width+10, bh=16;
+    var bx=cx(0)+18+tw+7, by=my-bh/2;
+    ctx.fillStyle=NAVYLI;
+    ctx.beginPath();
+    ctx.moveTo(bx+3,by); ctx.lineTo(bx+bw-3,by);
+    ctx.quadraticCurveTo(bx+bw,by,bx+bw,by+3);
+    ctx.lineTo(bx+bw,by+bh-3);
+    ctx.quadraticCurveTo(bx+bw,by+bh,bx+bw-3,by+bh);
+    ctx.lineTo(bx+3,by+bh);
+    ctx.quadraticCurveTo(bx,by+bh,bx,by+bh-3);
+    ctx.lineTo(bx,by+3);
+    ctx.quadraticCurveTo(bx,by,bx+3,by);
+    ctx.closePath(); ctx.fill();
+    ctx.fillStyle=GOLDI; ctx.textAlign='center';
+    ctx.fillText(pct, bx+bw/2, my);
+
+    // Taksitler
+    ctx.fillStyle=NAVY2; ctx.font='bold 15px Arial,sans-serif';
+    ctx.textBaseline='middle';
+    VADELER.forEach(function(v,vi){
+      ctx.textAlign='center';
+      ctx.fillText(tl(taksit(krd,v)), cx(vi+1)+COLS[vi+1]/2, my);
+    });
+
+    // Dikey çizgiler
+    ctx.strokeStyle=BRD; ctx.lineWidth=1;
+    for(var j=1;j<COLS.length;j++){
+      ctx.beginPath(); ctx.moveTo(cx(j)+.5,ry); ctx.lineTo(cx(j)+.5,ry+RH); ctx.stroke();
+    }
+  });
+
+  // Alt + yan çizgiler
+  var bot = ry0 + RH*NR;
+  ctx.strokeStyle=BRD; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(0,bot+.5); ctx.lineTo(W,bot+.5); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(.5,thy+THH); ctx.lineTo(.5,bot); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(W-.5,thy+THH); ctx.lineTo(W-.5,bot); ctx.stroke();
+
+  // ── ALTYAZI ────────────────────────────────────────────
+  ctx.fillStyle=BG;
+  ctx.fillRect(0, bot, W, AH);
+  ctx.fillStyle=MID; ctx.font='500 11px Arial,sans-serif';
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText(
+    '* Faiz oranı ve taksit tutarları kişinin durumuna göre değişkenlik gösterir.',
+    W/2, bot+AH/2
+  );
+
+  // ── CANVAS → IMG (Safari uyumlu) ──────────────────────
+  document.getElementById('tabloImg').src = cv.toDataURL('image/png');
+  var sonuc = document.getElementById('sonuc');
+  sonuc.classList.add('goster');
+  setTimeout(function(){
+    sonuc.scrollIntoView({behavior:'smooth', block:'start'});
+  }, 80);
+}
+
+window.addEventListener('load', function(){ hesapla(); });
+</script>
+</body>
+</html>
