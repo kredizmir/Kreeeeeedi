@@ -161,6 +161,12 @@ input[type=text]:focus { border-color:var(--navyli); background:#fff; }
     </div>
   </div>
 
+  <!-- Galeri adresi -->
+  <div class="field">
+    <label>Galeri Adresi (İsteğe Bağlı)</label>
+    <input type="text" id="adres" placeholder="ör. Atatürk Cad. No:12, İzmir" style="padding-left:12px" autocomplete="off">
+  </div>
+
   <!-- Araç fiyatı -->
   <div class="field">
     <label>Araç Fiyatı (TL)</label>
@@ -260,6 +266,7 @@ function taksit(kredi, n){
 function hesapla(){
   var fiyat  = oku();
   var galeri = document.getElementById('galeri').value.trim() || 'GALERİ';
+  var adres  = document.getElementById('adres').value.trim();
   if(isNaN(fiyat)||fiyat<=0){ alert('Geçerli bir fiyat girin.'); return; }
 
   // ── BOYUTLAR ──
@@ -272,7 +279,7 @@ function hesapla(){
   var AH    = 38;                    // altyazı
   var COLS  = [210,172,173,173,172]; // sütun genişlikleri (toplam=900)
   var NR    = ORANLAR.length;
-  var H     = FOTO_H + BH + THH + RH*NR + AH;
+  var H     = FOTO_H + BH + THH + RH*NR + AH + (adres ? 24 : 0);
 
   // ── RENKLER ──
   var NAVY='#0B1E3D', NAVY2='#122850', NAVYLI='#1A3566',
@@ -438,14 +445,23 @@ function hesapla(){
   ctx.beginPath(); ctx.moveTo(W-.5,thy+THH); ctx.lineTo(W-.5,bot); ctx.stroke();
 
   // ── ALTYAZI ────────────────────────────────────────────
+  var AH2 = adres ? AH + 24 : AH;
   ctx.fillStyle=BG;
-  ctx.fillRect(0, bot, W, AH);
+  ctx.fillRect(0, bot, W, AH2);
+
+  var footerMid = adres ? bot + AH/2 - 8 : bot + AH/2;
   ctx.fillStyle=MID; ctx.font='500 11px Arial,sans-serif';
   ctx.textAlign='center'; ctx.textBaseline='middle';
   ctx.fillText(
     '* Faiz oranı ve taksit tutarları kişinin durumuna göre değişkenlik gösterir.',
-    W/2, bot+AH/2
+    W/2, footerMid
   );
+
+  if(adres){
+    ctx.fillStyle=MID; ctx.font='500 11px Arial,sans-serif';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText('\uD83D\uDCCD ' + adres, W/2, bot + AH/2 + 14);
+  }
 
   // ── CANVAS → IMG (Safari uyumlu) ──────────────────────
   document.getElementById('tabloImg').src = cv.toDataURL('image/png');
